@@ -164,4 +164,86 @@ public class Project1Test {
 
         }
     }
+
+    @Test
+    public void productTest3(){
+
+        Seller seller = new Seller("seller1");
+        long id = 0;
+        String expectedName = "First Product";
+        double expectedPrice = 3.47;
+        String updateName = "Updated Product";
+        String expectedSeller = "seller1";
+
+        Product product = new Product(id, expectedName, expectedPrice, expectedSeller);
+
+        try {
+            sellerService.insertSeller(seller);
+            productService.insertProduct(product);
+            List<Product> updateProduct = productService.getAllProducts();
+
+            long updateID = updateProduct.get(0).getId();
+
+            try {
+                Product updatedProduct = new Product(updateID, updateName, expectedPrice, expectedSeller);
+                productService.updateProduct(updateID, updatedProduct);
+
+                if (!productService.getAllProducts().get(0).getName().equals(updateName)) {
+                    Assert.fail("Product update test failed");
+                }
+            }
+            catch (ProductException e) {
+                Assert.fail("Product update failed");
+            }
+
+
+
+
+        }
+        catch (SellerException e) {
+            Assert.fail("Seller does not match");
+        }
+        catch (ProductException e2) {
+
+        }
+    }
+
+    @Test
+    public void productTest4(){
+
+        Seller seller = new Seller("seller1");
+        long id = 0;
+        String expectedName1 = "First Product";
+        double expectedPrice1 = 3.47;
+        String expectedSeller1 = "seller1";
+
+        String expectedName2 = "Second Product";
+        double expectedPrice2 = 3.95;
+        String expectedSeller2 = "seller1";
+
+        Product product = new Product(id, expectedName1, expectedPrice1, expectedSeller1);
+        Product product2 = new Product(id, expectedName2, expectedPrice2, expectedSeller2);
+
+        try {
+            sellerService.insertSeller(seller);
+            productService.insertProduct(product);
+            productService.insertProduct(product2);
+            List<Product> productList = productService.getAllProducts();
+            long deleteId = productList.get(0).getId();
+
+            productService.deleteProduct(deleteId);
+
+            if (productService.getAllProducts().size() != 1) {
+                Assert.fail("Product not deleted");
+
+            }
+        }
+        catch (ProductException e) {
+            Assert.fail("Product update failed");
+        }
+        catch (SellerException e2) {
+            Assert.fail("Seller insert failed before we even got to the product insertion");
+        }
+
+    }
 }
