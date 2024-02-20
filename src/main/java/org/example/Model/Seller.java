@@ -4,14 +4,26 @@ import java.util.Objects;
 
 public class Seller {
 
+    public long id;
+
     public String seller;
+
 
     public Seller(){
 
     }
 
-    public Seller(String seller) {
+    public Seller(long id, String seller) {
+        this.id = id;
         this.seller = seller;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 
     public String getSeller() {
@@ -27,18 +39,19 @@ public class Seller {
         if (this == o) return true;
         if (!(o instanceof Seller)) return false;
         Seller seller1 = (Seller) o;
-        return Objects.equals(seller, seller1.seller);
+        return id == seller1.id && Objects.equals(seller, seller1.seller);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(seller);
+        return Objects.hash(id, seller);
     }
 
     @Override
     public String toString() {
         return "Seller{" +
-                "seller='" + seller + '\'' +
+                "id=" + id +
+                ", seller='" + seller + '\'' +
                 '}';
     }
 }

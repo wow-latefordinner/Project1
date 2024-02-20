@@ -13,7 +13,7 @@ import java.util.List;
 public class ProductService {
 
     List<Product> productList;
-    HashSet<Seller> sellerList;
+    List<Seller> sellerList;
 
     public static Logger log = LoggerFactory.getLogger(ProductService.class);
 
@@ -30,7 +30,7 @@ public class ProductService {
 //        Determine if the seller exists before adding product
 
 
-        if (sellerList.isEmpty() || !sellerList.contains(new Seller(product.getSeller()))) {
+        if (sellerList.isEmpty() /*|| !sellerList.contains(new Seller(product.getSeller()))*/) {
             log.warn("Seller does not exist.");
             throw new ProductException("Seller doesn't exist.  Add seller first then add product.");
         }

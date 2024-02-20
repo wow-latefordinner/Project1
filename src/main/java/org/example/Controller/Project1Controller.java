@@ -3,6 +3,8 @@ package org.example.Controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 import io.javalin.Javalin;
+import org.example.DAO.ProductDAO;
+import org.example.DAO.SellerDAO;
 import org.example.Exception.ProductException;
 import org.example.Exception.SellerException;
 import org.example.Model.Product;
@@ -17,10 +19,14 @@ public class Project1Controller {
 
     ProductService productService;
     SellerService sellerService;
+    SellerDAO sellerDAO;
+    ProductDAO productDAO;
 
-    public Project1Controller(ProductService productService, SellerService sellerService) {
-        this.productService = productService;
-        this.sellerService = sellerService;
+    public Project1Controller(ProductDAO productDAO, SellerDAO sellerDAO) {
+//        this.productService = productService;
+//        this.sellerService = sellerService;
+        this.sellerDAO = sellerDAO;
+        this.productDAO = productDAO;
     }
 
     public Javalin getAPI(){
@@ -31,8 +37,8 @@ public class Project1Controller {
         });
 
         api.get("seller", context -> {
-            Set<Seller> sellerHashSet = sellerService.getSellerList();
-            context.json(sellerHashSet);
+            List<Seller> sellerList = sellerDAO.getAllSellers();
+            context.json(sellerList);
         });
 
         api.post("seller", context -> {
@@ -42,7 +48,7 @@ public class Project1Controller {
 
                 try {
                     Seller seller = om.readValue(context.body(), Seller.class);
-                    sellerService.insertSeller(seller);
+                    sellerDAO.insertSeller(seller);
                     context.status(201);
 
                 } catch(MismatchedInputException e) {
@@ -59,14 +65,14 @@ public class Project1Controller {
         });
 
         api.get("product", context -> {
-            List<Product> productList  = productService.getAllProducts();
+            List<Product> productList  = productDAO.getAllProducts();
             context.json(productList);
         });
 
         api.get("product/{id}", context -> {
             long id = Long.parseLong(context.pathParam("id"));
             try {
-                Product p = productService.getProductbyID(id);
+                List<Product> p = productDAO.getProductById(id);
                 context.status(200);
                 context.json(p);
             }
@@ -83,7 +89,7 @@ public class Project1Controller {
 
                 try {
                     Product product = om.readValue(context.body(), Product.class);
-                    productService.insertProduct(product);
+                    productDAO.insertProduct(product);
                     context.status(201);
 
                 } catch(MismatchedInputException e) {
@@ -107,7 +113,7 @@ public class Project1Controller {
 
                 try {
                     Product product = om.readValue(context.body(), Product.class);
-                    productService.updateProduct(id, product);
+                    productDAO.updateProduct(product);
                     context.status(201);
 
                 } catch(MismatchedInputException e) {
@@ -127,11 +133,11 @@ public class Project1Controller {
             long id = Long.parseLong(context.pathParam("id"));
             try {
 
-                    productService.deleteProduct(id);
+                    productDAO.deleteProduct(id);
                     context.status(200);
 
             } catch(ProductException e) {
-                context.result(e.getMessage());
+//                context.result(e.getMessage());
                 context.status(200);
             }
 

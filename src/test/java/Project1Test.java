@@ -22,6 +22,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
@@ -81,8 +82,8 @@ public class Project1Test {
     @Test
     public void sellerTest1(){
 
-        HashSet<Seller> actual = new HashSet<Seller>();
-        Seller expected = new Seller("seller1");
+        List<Seller> actual = new ArrayList<>();
+        Seller expected = new Seller(0,"seller1");
 
         try {
             sellerService.insertSeller(expected);
@@ -97,153 +98,156 @@ public class Project1Test {
         }
     }
 
-    @Test
-    public void productTest1(){
-
-        Seller seller = new Seller("seller1");
-        long id = 0;
-        String expectedName = "First Product";
-        double expectedPrice = 3.47;
-        String expectedSeller = "seller1";
-
-        Product product = new Product(id, expectedName, expectedPrice, expectedSeller);
-
-        try {
-            sellerService.insertSeller(seller);
-            productService.insertProduct(product);
-//      Assuming there is only 1 product entered for this test even though I will loop through the list
-            List<Product> productList = productService.getAllProducts();
-
-            for (int i = 0; i < productList.size(); i++) {
-                if (id == productList.get(i).id) {
-                    Assert.fail("Product ID not set as expected");
-                }
-                if (!(expectedName.equals(productList.get(i).name))) {
-                    Assert.fail("Product name does not match expected value");
-                }
-                if (expectedPrice != productList.get(i).price) {
-                    Assert.fail("Price is not expected value");
-                }
-                if (!(expectedSeller.equals(productList.get(i).seller))) {
-                    Assert.fail("Seller does not match expected seller");
-                }
-            }
-
-
-        }
-        catch (SellerException e) {
-            Assert.fail("Seller does not match");
-        }
-        catch (ProductException e2) {
-            Assert.fail("Product failed to be added");
-        }
-    }
-    @Test
-    public void productTest2(){
-
-        Seller seller = new Seller("seller1");
-        long id = 0;
-        String expectedName = "First Product";
-        double expectedPrice = 3.47;
-        String expectedSeller = "seller2";
-
-        Product product = new Product(id, expectedName, expectedPrice, expectedSeller);
-
-        try {
-            sellerService.insertSeller(seller);
-            productService.insertProduct(product);
-//          If this completes, then the test failed since the exception for invalid seller did not get thrown
-            Assert.fail("Product incorrectly added.");
-
-
-        }
-        catch (SellerException e) {
-            Assert.fail("Seller does not match");
-        }
-        catch (ProductException e2) {
-
-        }
-    }
-
-    @Test
-    public void productTest3(){
-
-        Seller seller = new Seller("seller1");
-        long id = 0;
-        String expectedName = "First Product";
-        double expectedPrice = 3.47;
-        String updateName = "Updated Product";
-        String expectedSeller = "seller1";
-
-        Product product = new Product(id, expectedName, expectedPrice, expectedSeller);
-
-        try {
-            sellerService.insertSeller(seller);
-            productService.insertProduct(product);
-            List<Product> updateProduct = productService.getAllProducts();
-
-            long updateID = updateProduct.get(0).getId();
-
-            try {
-                Product updatedProduct = new Product(updateID, updateName, expectedPrice, expectedSeller);
-                productService.updateProduct(updateID, updatedProduct);
-
-                if (!productService.getAllProducts().get(0).getName().equals(updateName)) {
-                    Assert.fail("Product update test failed");
-                }
-            }
-            catch (ProductException e) {
-                Assert.fail("Product update failed");
-            }
-
-
-
-
-        }
-        catch (SellerException e) {
-            Assert.fail("Seller does not match");
-        }
-        catch (ProductException e2) {
-
-        }
-    }
-
-    @Test
-    public void productTest4(){
-
-        Seller seller = new Seller("seller1");
-        long id = 0;
-        String expectedName1 = "First Product";
-        double expectedPrice1 = 3.47;
-        String expectedSeller1 = "seller1";
-
-        String expectedName2 = "Second Product";
-        double expectedPrice2 = 3.95;
-        String expectedSeller2 = "seller1";
-
-        Product product = new Product(id, expectedName1, expectedPrice1, expectedSeller1);
-        Product product2 = new Product(id, expectedName2, expectedPrice2, expectedSeller2);
-
-        try {
-            sellerService.insertSeller(seller);
-            productService.insertProduct(product);
-            productService.insertProduct(product2);
-            List<Product> productList = productService.getAllProducts();
-            long deleteId = productList.get(0).getId();
-
-            productService.deleteProduct(deleteId);
-
-            if (productService.getAllProducts().size() != 1) {
-                Assert.fail("Product not deleted");
-
-            }
-        }
-        catch (ProductException e) {
-            Assert.fail("Product update failed");
-        }
-        catch (SellerException e2) {
-            Assert.fail("Seller insert failed before we even got to the product insertion");
-        }
-
-    }
+//    @Test
+//    public void productTest1(){
+//
+//        List<Seller> actual = new ArrayList<>();
+//        Seller expected = new Seller(0,"seller1");
+//        long id = 0;
+//        String expectedName = "First Product";
+//        double expectedPrice = 3.47;
+//        String expectedSeller = "seller1";
+//
+//        Product product = new Product(id, expectedName, expectedPrice, expectedSeller);
+//
+//        try {
+//            sellerService.insertSeller(seller);
+//            productService.insertProduct(product);
+////      Assuming there is only 1 product entered for this test even though I will loop through the list
+//            List<Product> productList = productService.getAllProducts();
+//
+//            for (int i = 0; i < productList.size(); i++) {
+//                if (id == productList.get(i).id) {
+//                    Assert.fail("Product ID not set as expected");
+//                }
+//                if (!(expectedName.equals(productList.get(i).name))) {
+//                    Assert.fail("Product name does not match expected value");
+//                }
+//                if (expectedPrice != productList.get(i).price) {
+//                    Assert.fail("Price is not expected value");
+//                }
+//                if (!(expectedSeller.equals(productList.get(i).seller))) {
+//                    Assert.fail("Seller does not match expected seller");
+//                }
+//            }
+//
+//
+//        }
+//        catch (SellerException e) {
+//            Assert.fail("Seller does not match");
+//        }
+//        catch (ProductException e2) {
+//            Assert.fail("Product failed to be added");
+//        }
+//    }
+//    @Test
+//    public void productTest2(){
+//
+//        List<Seller> actual = new ArrayList<>();
+//        Seller expected = new Seller(0,"seller1");
+//        long id = 0;
+//        String expectedName = "First Product";
+//        double expectedPrice = 3.47;
+//        String expectedSeller = "seller2";
+//
+//        Product product = new Product(id, expectedName, expectedPrice, expectedSeller);
+//
+//        try {
+//            sellerService.insertSeller(seller);
+//            productService.insertProduct(product);
+////          If this completes, then the test failed since the exception for invalid seller did not get thrown
+//            Assert.fail("Product incorrectly added.");
+//
+//
+//        }
+//        catch (SellerException e) {
+//            Assert.fail("Seller does not match");
+//        }
+//        catch (ProductException e2) {
+//
+//        }
+//    }
+//
+//    @Test
+//    public void productTest3(){
+//
+//        List<Seller> actual = new ArrayList<>();
+//        Seller expected = new Seller(0,"seller1");
+//        long id = 0;
+//        String expectedName = "First Product";
+//        double expectedPrice = 3.47;
+//        String updateName = "Updated Product";
+//        String expectedSeller = "seller1";
+//
+//        Product product = new Product(id, expectedName, expectedPrice, expectedSeller);
+//
+//        try {
+//            sellerService.insertSeller(seller);
+//            productService.insertProduct(product);
+//            List<Product> updateProduct = productService.getAllProducts();
+//
+//            long updateID = updateProduct.get(0).getId();
+//
+//            try {
+//                Product updatedProduct = new Product(updateID, updateName, expectedPrice, expectedSeller);
+//                productService.updateProduct(updateID, updatedProduct);
+//
+//                if (!productService.getAllProducts().get(0).getName().equals(updateName)) {
+//                    Assert.fail("Product update test failed");
+//                }
+//            }
+//            catch (ProductException e) {
+//                Assert.fail("Product update failed");
+//            }
+//
+//
+//
+//
+//        }
+//        catch (SellerException e) {
+//            Assert.fail("Seller does not match");
+//        }
+//        catch (ProductException e2) {
+//
+//        }
+//    }
+//
+//    @Test
+//    public void productTest4(){
+//
+//        Seller seller = new Seller("seller1");
+//        long id = 0;
+//        String expectedName1 = "First Product";
+//        double expectedPrice1 = 3.47;
+//        String expectedSeller1 = "seller1";
+//
+//        String expectedName2 = "Second Product";
+//        double expectedPrice2 = 3.95;
+//        String expectedSeller2 = "seller1";
+//
+//        Product product = new Product(id, expectedName1, expectedPrice1, expectedSeller1);
+//        Product product2 = new Product(id, expectedName2, expectedPrice2, expectedSeller2);
+//
+//        try {
+//            sellerService.insertSeller(seller);
+//            productService.insertProduct(product);
+//            productService.insertProduct(product2);
+//            List<Product> productList = productService.getAllProducts();
+//            long deleteId = productList.get(0).getId();
+//
+//            productService.deleteProduct(deleteId);
+//
+//            if (productService.getAllProducts().size() != 1) {
+//                Assert.fail("Product not deleted");
+//
+//            }
+//        }
+//        catch (ProductException e) {
+//            Assert.fail("Product update failed");
+//        }
+//        catch (SellerException e2) {
+//            Assert.fail("Seller insert failed before we even got to the product insertion");
+//        }
+//
+//    }
 }

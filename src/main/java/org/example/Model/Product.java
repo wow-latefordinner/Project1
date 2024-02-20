@@ -8,17 +8,17 @@ public class Product {
     public String name;
     public double price;
 
-    public String seller;
+    public int sellerId;
 
     public Product() {
 
     }
 
-    public Product(long id, String name, double price, String seller) {
+    public Product(long id, String name, double price, int sellerId) {
         this.id = id;
         this.name = name;
         this.price = price;
-        this.seller = seller;
+        this.sellerId = sellerId;
     }
 
     public long getId() {
@@ -45,12 +45,12 @@ public class Product {
         this.price = price;
     }
 
-    public String getSeller() {
-        return seller;
+    public int getSellerId() {
+        return sellerId;
     }
 
-    public void setSeller(String seller) {
-        this.seller = seller;
+    public void setSellerId(int sellerId) {
+        this.sellerId = sellerId;
     }
 
     @Override
@@ -58,21 +58,21 @@ public class Product {
         if (this == o) return true;
         if (!(o instanceof Product)) return false;
         Product product = (Product) o;
-        return Double.compare(price, product.price) == 0 && Objects.equals(id, product.id) && Objects.equals(name, product.name) && Objects.equals(seller, product.seller);
+        return id == product.id && Double.compare(price, product.price) == 0 && sellerId == product.sellerId && Objects.equals(name, product.name);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, price, seller);
+        return Objects.hash(id, name, price, sellerId);
     }
 
     @Override
     public String toString() {
         return "Product{" +
-                "id='" + id + '\'' +
+                "id=" + id +
                 ", name='" + name + '\'' +
                 ", price=" + price +
-                ", seller='" + seller + '\'' +
+                ", sellerId=" + sellerId +
                 '}';
     }
 }

@@ -1,24 +1,24 @@
 package org.example.Service;
 
 import org.example.Exception.SellerException;
-import org.example.Model.Product;
 import org.example.Model.Seller;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
+//import java.util.Set;
 
 
 public class SellerService {
 
-    HashSet<Seller> sellerHashSet;
+    List<Seller> sellerList;
 
     public static Logger log = LoggerFactory.getLogger(SellerService.class);
 
     public SellerService (){
-        sellerHashSet = new HashSet<>();
+        sellerList = new ArrayList<>();
     }
 
     public void insertSeller(Seller seller) throws SellerException{
@@ -28,13 +28,13 @@ public class SellerService {
             throw new SellerException("No seller provided");
         }
 
-        if (!sellerHashSet.add(seller)) {
+        if (!sellerList.add(seller)) {
             log.warn("Seller already exists");
             throw new SellerException("Seller already exists");
-        };
+        }
     }
 
-    public HashSet<Seller> getSellerList() {
-        return sellerHashSet;
+    public List<Seller> getSellerList() {
+        return sellerList;
     }
 }
