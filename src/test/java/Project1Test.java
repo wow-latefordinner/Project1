@@ -3,16 +3,19 @@ import org.example.Exception.SellerException;
 import org.example.Exception.ProductException;
 import org.example.Model.Product;
 import org.example.Model.Seller;
-import org.example.Service.ProductService;
-import org.example.Service.SellerService;
+//import org.example.Service.ProductService;
+//import org.example.Service.SellerService;
+import org.example.Util.ConnectionSingleton;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.example.DAO.SellerDAO;
+import org.example.DAO.ProductDAO;
 
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+//import com.fasterxml.jackson.core.JsonProcessingException;
+//import com.fasterxml.jackson.databind.ObjectMapper;
 //import util.CommandLine;
 
 import io.javalin.Javalin;
@@ -22,15 +25,24 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
+import static org.example.Util.ConnectionSingleton.resetTestDatabase;
+
 
 public class Project1Test {
 
-    SellerService sellerService;
-    ProductService productService;
+//    SellerService sellerService;
+//    ProductService productService;
+
+    SellerDAO sellerDAO;
+    ProductDAO productDAO;
+
+    Connection conn;
 
 //    Project1Controller project1Controller = new Project1Controller(productService, sellerService);
 
@@ -40,17 +52,25 @@ public class Project1Test {
 
     @Before
     public void beforeEach() throws InterruptedException{
+        conn = ConnectionSingleton.getConnection();
 
-        sellerService = new SellerService();
-        productService = new ProductService(sellerService);
+//        sellerService = new SellerService();
+//        productService = new ProductService(sellerService);
 
-
+        sellerDAO = new SellerDAO(conn);
+        productDAO = new ProductDAO(conn, sellerDAO);
     }
 
-//    @After
-//    public void afterEach(){
-//
-//    }
+    @After
+    public void afterEach(){
+        try {
+            resetTestDatabase();
+        }
+        catch (Exception e) {
+            Assert.fail("Exception while cleaning up code");
+        };
+
+    }
 
     /**
      * The response for endpoint echo should contain an Object matching the data contained within the following
@@ -80,17 +100,52 @@ public class Project1Test {
 //    }
 
     @Test
-    public void sellerTest1(){
-
-        List<Seller> actual = new ArrayList<>();
-        Seller expected = new Seller(0,"seller1");
+    public void sellerModelTest(){
+//  Adding a seller that passes
+        String newSellerName = "seller1";
+        Seller expected = new Seller(0, newSellerName);
 
         try {
-            sellerService.insertSeller(expected);
-            actual = sellerService.getSellerList();
+            Assert.assertEquals(0, expected.getId());
+            Assert.assertEquals(newSellerName, expected.getSeller());
+        }
+        catch (Exception e) {
+            Assert.fail("Seller object had unexpected issues");
+        }
+    }
 
-                if (!actual.contains(expected)) {
-                    Assert.fail("The expected value is not the same as the actual value");
+    @Test
+    public void productModel(){
+
+        String newSellerName = "seller1";
+        Seller expectedSeller = new Seller(0, newSellerName);
+        String newProductName = "New product 1";
+        double newProductPrice = 3.47;
+        int newSellerId = 1;
+        Product newProduct = new Product(0,newProductName, newProductPrice, newSellerId);
+
+        try {
+            Assert.assertEquals("Product ID added",0,newProduct.getId());
+            Assert.assertEquals("Product Name", newProductName, newProduct.getName());
+            Assert.assertEquals("Product Price",newProductPrice, newProduct.getPrice(), .01);
+            Assert.assertEquals("Product Seller ID",newSellerId, newProduct.getSellerId());
+        }
+        catch (Exception e) {
+            Assert.fail("Product model object had unexpected issues");
+        }
+    }
+    @Test
+    public void sellerTest1(){
+//  Adding a seller that passes
+        String newSellerName = "seller1";
+        Seller expected = new Seller(0, newSellerName);
+
+        try {
+            sellerDAO.insertSeller(expected);
+
+
+                if (sellerDAO.sellerExists(newSellerName) == 0) {
+                    Assert.fail("The expected seller was not inserted");
                 }
         }
         catch (SellerException e) {
@@ -98,156 +153,113 @@ public class Project1Test {
         }
     }
 
-//    @Test
-//    public void productTest1(){
-//
-//        List<Seller> actual = new ArrayList<>();
-//        Seller expected = new Seller(0,"seller1");
-//        long id = 0;
-//        String expectedName = "First Product";
-//        double expectedPrice = 3.47;
-//        String expectedSeller = "seller1";
-//
-//        Product product = new Product(id, expectedName, expectedPrice, expectedSeller);
-//
-//        try {
-//            sellerService.insertSeller(seller);
-//            productService.insertProduct(product);
-////      Assuming there is only 1 product entered for this test even though I will loop through the list
-//            List<Product> productList = productService.getAllProducts();
-//
-//            for (int i = 0; i < productList.size(); i++) {
-//                if (id == productList.get(i).id) {
-//                    Assert.fail("Product ID not set as expected");
-//                }
-//                if (!(expectedName.equals(productList.get(i).name))) {
-//                    Assert.fail("Product name does not match expected value");
-//                }
-//                if (expectedPrice != productList.get(i).price) {
-//                    Assert.fail("Price is not expected value");
-//                }
-//                if (!(expectedSeller.equals(productList.get(i).seller))) {
-//                    Assert.fail("Seller does not match expected seller");
-//                }
-//            }
-//
-//
-//        }
-//        catch (SellerException e) {
-//            Assert.fail("Seller does not match");
-//        }
-//        catch (ProductException e2) {
-//            Assert.fail("Product failed to be added");
-//        }
-//    }
-//    @Test
-//    public void productTest2(){
-//
-//        List<Seller> actual = new ArrayList<>();
-//        Seller expected = new Seller(0,"seller1");
-//        long id = 0;
-//        String expectedName = "First Product";
-//        double expectedPrice = 3.47;
-//        String expectedSeller = "seller2";
-//
-//        Product product = new Product(id, expectedName, expectedPrice, expectedSeller);
-//
-//        try {
-//            sellerService.insertSeller(seller);
-//            productService.insertProduct(product);
-////          If this completes, then the test failed since the exception for invalid seller did not get thrown
-//            Assert.fail("Product incorrectly added.");
-//
-//
-//        }
-//        catch (SellerException e) {
-//            Assert.fail("Seller does not match");
-//        }
-//        catch (ProductException e2) {
-//
-//        }
-//    }
-//
-//    @Test
-//    public void productTest3(){
-//
-//        List<Seller> actual = new ArrayList<>();
-//        Seller expected = new Seller(0,"seller1");
-//        long id = 0;
-//        String expectedName = "First Product";
-//        double expectedPrice = 3.47;
-//        String updateName = "Updated Product";
-//        String expectedSeller = "seller1";
-//
-//        Product product = new Product(id, expectedName, expectedPrice, expectedSeller);
-//
-//        try {
-//            sellerService.insertSeller(seller);
-//            productService.insertProduct(product);
-//            List<Product> updateProduct = productService.getAllProducts();
-//
-//            long updateID = updateProduct.get(0).getId();
-//
-//            try {
-//                Product updatedProduct = new Product(updateID, updateName, expectedPrice, expectedSeller);
-//                productService.updateProduct(updateID, updatedProduct);
-//
-//                if (!productService.getAllProducts().get(0).getName().equals(updateName)) {
-//                    Assert.fail("Product update test failed");
-//                }
-//            }
-//            catch (ProductException e) {
-//                Assert.fail("Product update failed");
-//            }
-//
-//
-//
-//
-//        }
-//        catch (SellerException e) {
-//            Assert.fail("Seller does not match");
-//        }
-//        catch (ProductException e2) {
-//
-//        }
-//    }
-//
-//    @Test
-//    public void productTest4(){
-//
-//        Seller seller = new Seller("seller1");
-//        long id = 0;
-//        String expectedName1 = "First Product";
-//        double expectedPrice1 = 3.47;
-//        String expectedSeller1 = "seller1";
-//
-//        String expectedName2 = "Second Product";
-//        double expectedPrice2 = 3.95;
-//        String expectedSeller2 = "seller1";
-//
-//        Product product = new Product(id, expectedName1, expectedPrice1, expectedSeller1);
-//        Product product2 = new Product(id, expectedName2, expectedPrice2, expectedSeller2);
-//
-//        try {
-//            sellerService.insertSeller(seller);
-//            productService.insertProduct(product);
-//            productService.insertProduct(product2);
-//            List<Product> productList = productService.getAllProducts();
-//            long deleteId = productList.get(0).getId();
-//
-//            productService.deleteProduct(deleteId);
-//
-//            if (productService.getAllProducts().size() != 1) {
-//                Assert.fail("Product not deleted");
-//
-//            }
-//        }
-//        catch (ProductException e) {
-//            Assert.fail("Product update failed");
-//        }
-//        catch (SellerException e2) {
-//            Assert.fail("Seller insert failed before we even got to the product insertion");
-//        }
-//
-//    }
+    @Test
+    public void sellerTest2(){
+//  Adding a duplicate seller name
+        String newSellerName = "seller1";
+        Seller expected = new Seller(0, newSellerName);
+        Seller expected2 = new Seller(0, newSellerName);
+
+        try {
+            sellerDAO.insertSeller(expected);
+
+
+            if (sellerDAO.sellerExists(newSellerName) == 0) {
+                Assert.fail("The expected seller was not inserted");
+            }
+
+            sellerDAO.insertSeller(expected2);
+        }
+        catch (SellerException e) {
+            Assert.assertTrue(true);
+        }
+    }
+
+    @Test
+    public void productTest1(){
+
+        String newSellerName = "seller1";
+        Seller expectedSeller = new Seller(0, newSellerName);
+        String newProductName = "New product 1";
+        double newProductPrice = 3.47;
+        int newSellerId = 1;
+        Product newProduct = new Product(0,newProductName, newProductPrice, newSellerId);
+
+        try {
+            sellerDAO.insertSeller(expectedSeller);
+
+
+            if (sellerDAO.sellerExists(newSellerName) == 1) {
+                try {
+                    productDAO.insertProduct(newProduct);
+                }
+                catch (ProductException e) {
+                    Assert.fail("Product Exception thrown adding a product.");
+                }
+            }
+        }
+        catch (SellerException e) {
+            Assert.fail("Seller does not match");
+        }
+    }
+
+    @Test
+    public void productTest2(){
+
+        String newSellerName = "seller1";
+        Seller expectedSeller = new Seller(0, newSellerName);
+        String newProductName = "";
+        double newProductPrice = 3.47;
+        int newSellerId = 1;
+        Product newProduct = new Product(0,newProductName, newProductPrice, newSellerId);
+
+        try {
+            sellerDAO.insertSeller(expectedSeller);
+
+
+            if (sellerDAO.sellerExists(newSellerName) == 1) {
+                try {
+                    productDAO.insertProduct(newProduct);
+                }
+                catch (ProductException e) {
+//                    Do nothing and return the test has passed.
+                    Assert.assertTrue(true);
+                }
+            }
+        }
+        catch (SellerException e) {
+            Assert.fail("Seller does not match");
+        }
+    }
+
+    @Test
+    public void productTest3(){
+
+        String newSellerName = "seller1";
+        Seller expectedSeller = new Seller(0, newSellerName);
+        String newProductName = "Product 1";
+        double newProductPrice = -3.47;
+        int newSellerId = 1;
+        Product newProduct = new Product(0,newProductName, newProductPrice, newSellerId);
+
+        try {
+            sellerDAO.insertSeller(expectedSeller);
+
+
+            if (sellerDAO.sellerExists(newSellerName) == 1) {
+                try {
+                    productDAO.insertProduct(newProduct);
+                }
+                catch (ProductException e) {
+//                    Do nothing and return the test has passed.
+                    Assert.assertTrue(true);
+                }
+            }
+        }
+        catch (SellerException e) {
+            Assert.fail("Seller does not match");
+        }
+    }
+
+
 }

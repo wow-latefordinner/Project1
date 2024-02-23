@@ -3,7 +3,7 @@ package org.example.DAO;
 import org.example.Exception.ProductException;
 import org.example.Model.Product;
 //import org.example.Model.Seller;
-import org.example.Service.ProductService;
+//import org.example.Service.ProductService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,7 +17,7 @@ import java.util.List;
 public class ProductDAO {
     Connection conn;
     SellerDAO sellerDAO;
-    public static Logger log = LoggerFactory.getLogger(ProductService.class);
+    public static Logger log = LoggerFactory.getLogger(ProductDAO.class);
 
     public ProductDAO(Connection conn, SellerDAO sellerDAO) {
         this.conn = conn;
