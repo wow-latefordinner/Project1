@@ -41,7 +41,7 @@ public class ConnectionSingleton {
         if(connection == null){
             try {
                 connection = DriverManager.getConnection(url, username, password);
-                resetTestDatabase();
+//                resetTestDatabase();
             } catch (SQLException e) {
                 e.printStackTrace();
             }

@@ -53,6 +53,9 @@ public class Project1Test {
     @Before
     public void beforeEach() throws InterruptedException{
         conn = ConnectionSingleton.getConnection();
+//        Execute the reset to be certain records are cleared
+
+        resetTestDatabase();
 
 //        sellerService = new SellerService();
 //        productService = new ProductService(sellerService);
