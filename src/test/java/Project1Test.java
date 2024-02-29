@@ -3,8 +3,8 @@ import org.example.Exception.SellerException;
 import org.example.Exception.ProductException;
 import org.example.Model.Product;
 import org.example.Model.Seller;
-//import org.example.Service.ProductService;
-//import org.example.Service.SellerService;
+import org.example.Service.ProductService;
+import org.example.Service.SellerService;
 import org.example.Util.ConnectionSingleton;
 import org.junit.After;
 import org.junit.Assert;
@@ -36,8 +36,8 @@ import static org.example.Util.ConnectionSingleton.resetTestDatabase;
 
 public class Project1Test {
 
-//    SellerService sellerService;
-//    ProductService productService;
+    SellerService sellerService;
+    ProductService productService;
 
     SellerDAO sellerDAO;
     ProductDAO productDAO;
@@ -57,11 +57,13 @@ public class Project1Test {
 
         resetTestDatabase();
 
-//        sellerService = new SellerService();
-//        productService = new ProductService(sellerService);
+
 
         sellerDAO = new SellerDAO(conn);
         productDAO = new ProductDAO(conn, sellerDAO);
+
+        sellerService = new SellerService(sellerDAO);
+        productService = new ProductService(sellerService, productDAO);
     }
 
     @After
@@ -144,10 +146,10 @@ public class Project1Test {
         Seller expected = new Seller(0, newSellerName);
 
         try {
-            sellerDAO.insertSeller(expected);
+            sellerService.insertSeller(expected);
 
 
-                if (sellerDAO.sellerExists(newSellerName) == 0) {
+                if (sellerService.sellerExists(newSellerName) == 0) {
                     Assert.fail("The expected seller was not inserted");
                 }
         }
@@ -164,14 +166,14 @@ public class Project1Test {
         Seller expected2 = new Seller(0, newSellerName);
 
         try {
-            sellerDAO.insertSeller(expected);
+            sellerService.insertSeller(expected);
 
 
-            if (sellerDAO.sellerExists(newSellerName) == 0) {
+            if (sellerService.sellerExists(newSellerName) == 0) {
                 Assert.fail("The expected seller was not inserted");
             }
 
-            sellerDAO.insertSeller(expected2);
+            sellerService.insertSeller(expected2);
         }
         catch (SellerException e) {
             Assert.assertTrue(true);
@@ -189,12 +191,12 @@ public class Project1Test {
         Product newProduct = new Product(0,newProductName, newProductPrice, newSellerId);
 
         try {
-            sellerDAO.insertSeller(expectedSeller);
+            sellerService.insertSeller(expectedSeller);
 
 
-            if (sellerDAO.sellerExists(newSellerName) == 1) {
+            if (sellerService.sellerExists(newSellerName) == 1) {
                 try {
-                    productDAO.insertProduct(newProduct);
+                    productService.insertProduct(newProduct);
                 }
                 catch (ProductException e) {
                     Assert.fail("Product Exception thrown adding a product.");
@@ -217,12 +219,12 @@ public class Project1Test {
         Product newProduct = new Product(0,newProductName, newProductPrice, newSellerId);
 
         try {
-            sellerDAO.insertSeller(expectedSeller);
+            sellerService.insertSeller(expectedSeller);
 
 
-            if (sellerDAO.sellerExists(newSellerName) == 1) {
+            if (sellerService.sellerExists(newSellerName) == 1) {
                 try {
-                    productDAO.insertProduct(newProduct);
+                    productService.insertProduct(newProduct);
                 }
                 catch (ProductException e) {
 //                    Do nothing and return the test has passed.
@@ -246,12 +248,12 @@ public class Project1Test {
         Product newProduct = new Product(0,newProductName, newProductPrice, newSellerId);
 
         try {
-            sellerDAO.insertSeller(expectedSeller);
+            sellerService.insertSeller(expectedSeller);
 
 
-            if (sellerDAO.sellerExists(newSellerName) == 1) {
+            if (sellerService.sellerExists(newSellerName) == 1) {
                 try {
-                    productDAO.insertProduct(newProduct);
+                    productService.insertProduct(newProduct);
                 }
                 catch (ProductException e) {
 //                    Do nothing and return the test has passed.

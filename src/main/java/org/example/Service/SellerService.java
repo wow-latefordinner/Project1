@@ -1,5 +1,6 @@
 package org.example.Service;
 
+import org.example.DAO.SellerDAO;
 import org.example.Exception.SellerException;
 import org.example.Model.Seller;
 import org.slf4j.Logger;
@@ -16,12 +17,14 @@ import java.util.List;
 
 public class SellerService {
 
-    List<Seller> sellerList;
+//    List<Seller> sellerList;
+    SellerDAO sellerDAO;
 
     public static Logger log = LoggerFactory.getLogger(SellerService.class);
 
-    public SellerService (){
-        sellerList = new ArrayList<>();
+    public SellerService (SellerDAO sellerDAO){
+//        sellerList = new ArrayList<>();
+        this.sellerDAO = sellerDAO;
     }
 
     public void insertSeller(Seller seller) throws SellerException{
@@ -31,13 +34,24 @@ public class SellerService {
             throw new SellerException("No seller provided");
         }
 
-        if (!sellerList.add(seller)) {
-            log.warn("Seller already exists");
+        try {
+            sellerDAO.insertSeller(seller);
+        }
+        catch (SellerException e)
+        {
             throw new SellerException("Seller already exists");
         }
     }
 
     public List<Seller> getSellerList() {
-        return sellerList;
+        return sellerDAO.getAllSellers();
+    }
+
+    public int sellerExists(String sellerName) {
+        return sellerDAO.sellerExists(sellerName);
+    }
+
+    public int sellerIdExists(int sellerId) {
+        return sellerDAO.sellerIdExists(sellerId);
     }
 }
